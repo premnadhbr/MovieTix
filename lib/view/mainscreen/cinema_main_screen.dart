@@ -1,4 +1,4 @@
-import 'package:cinema_ticket_booking_app/utils/const.dart';
+import 'package:cinema_ticket_booking_app/view/home/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -17,10 +17,17 @@ class _CinemaMainScreenState extends State<CinemaMainScreen> {
     Icons.person_rounded,
   ];
   int currentIndex = 0;
+
+  List<Widget> screens = const [
+    HomePage(),
+    HomePage(),
+    HomePage(),
+    HomePage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: appBackgroundColor,
       bottomNavigationBar: SizedBox(
         height: 100,
         child: Row(
@@ -63,6 +70,7 @@ class _CinemaMainScreenState extends State<CinemaMainScreen> {
           ),
         ),
       ),
+      body: screens[currentIndex],
     );
   }
 }

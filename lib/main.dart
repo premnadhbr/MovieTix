@@ -1,3 +1,4 @@
+import 'package:cinema_ticket_booking_app/utils/const.dart';
 import 'package:cinema_ticket_booking_app/view/mainscreen/cinema_main_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -14,9 +15,12 @@ class MyApp extends StatelessWidget {
       title: 'MovieTix',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+          scaffoldBackgroundColor: appBackgroundColor,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: appBackgroundColor,
+          )),
       home: const CinemaMainScreen(),
     );
   }
