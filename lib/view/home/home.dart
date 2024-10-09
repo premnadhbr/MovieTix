@@ -1,7 +1,7 @@
-import 'dart:typed_data';
+import 'dart:math';
 
 import 'package:cinema_ticket_booking_app/model/catogery_model.dart';
-import 'package:cinema_ticket_booking_app/movies_model.dart';
+import 'package:cinema_ticket_booking_app/model/movies_model.dart';
 import 'package:cinema_ticket_booking_app/utils/const.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +13,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late PageController controller;
+  int currentIndex = 1;
+  double pageoffset = 1;
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController(
+      initialPage: currentIndex,
+      viewportFraction: 0.7,
+    )..addListener(
+        () {
+          setState(() {
+            pageoffset = controller.page!;
+          });
+        },
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,35 +82,67 @@ class _HomePageState extends State<HomePage> {
                   height: 17,
                 ),
                 customItems(),
-                const SizedBox(
-                  height: 40,
-                ),
+                const SizedBox(height: 40),
               ],
             ),
-            const Text(
-              "Showing this month",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
             Expanded(
-                child: Stack(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageView.builder(
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                        child: Transform.rotate(
-                      angle: 12,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: Image.network(movies[index].poster),
-                      ),
-                    ));
-                  },
+                const Text(
+                  "Showing this month",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Expanded(
+                  child: PageView.builder(
+                    controller: controller,
+                    itemCount: movies.length,
+                    onPageChanged: (value) {
+                      setState(() {
+                        currentIndex = value % movies.length;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      double scale = max(
+                        0.6,
+                        (1 - (pageoffset - index).abs() + 0.6),
+                      );
+                      double angle = (controller.position.haveDimensions
+                              ? index.toDouble() - (controller.page ?? 0)
+                              : index.toDouble() - 1) *
+                          5;
+                      angle = angle.clamp(-5, 5);
+                      final movie = movies[index % movies.length];
+                      // final movie = movies[index];
+                      return Padding(
+                        padding:
+                            EdgeInsets.only(top: 100 - (scale / 1.6 * 100)),
+                        child: GestureDetector(
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Transform.rotate(
+                              angle: angle * pi / 90,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  25,
+                                ),
+                                child: Image.network(
+                                  movie.poster,
+                                  width: 180,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 )
               ],
             ))
