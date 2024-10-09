@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cinema_ticket_booking_app/model/catogery_model.dart';
 import 'package:cinema_ticket_booking_app/model/movies_model.dart';
 import 'package:cinema_ticket_booking_app/utils/const.dart';
+import 'package:cinema_ticket_booking_app/view/details/details..dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,6 +30,12 @@ class _HomePageState extends State<HomePage> {
           });
         },
       );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
   }
 
   @override
@@ -86,66 +93,111 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             Expanded(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Showing this month",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Showing this month",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                Expanded(
-                  child: PageView.builder(
-                    controller: controller,
-                    itemCount: movies.length,
-                    onPageChanged: (value) {
-                      setState(() {
-                        currentIndex = value % movies.length;
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      double scale = max(
-                        0.6,
-                        (1 - (pageoffset - index).abs() + 0.6),
-                      );
-                      double angle = (controller.position.haveDimensions
-                              ? index.toDouble() - (controller.page ?? 0)
-                              : index.toDouble() - 1) *
-                          5;
-                      angle = angle.clamp(-5, 5);
-                      final movie = movies[index % movies.length];
-                      // final movie = movies[index];
-                      return Padding(
-                        padding:
-                            EdgeInsets.only(top: 100 - (scale / 1.6 * 100)),
-                        child: GestureDetector(
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            child: Transform.rotate(
-                              angle: angle * pi / 90,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                  25,
-                                ),
-                                child: Image.network(
-                                  movie.poster,
-                                  width: 180,
-                                  fit: BoxFit.cover,
+                  const SizedBox(height: 30),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        PageView.builder(
+                          controller: controller,
+                          itemCount: movies.length,
+                          onPageChanged: (index) {
+                            setState(() {
+                              currentIndex = index;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            double scale = max(
+                              0.6,
+                              (1 - (pageoffset - index).abs() + 0.6),
+                            );
+                            double angle = (controller.position.haveDimensions
+                                    ? index.toDouble() - (controller.page ?? 0)
+                                    : index.toDouble() - 1) *
+                                5;
+                            angle = angle.clamp(-5, 5);
+
+                            final movie = movies[index];
+
+                            // Apply 30px padding to the middle page (currentIndex)
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                top: 100 - (scale / 1.6 * 100),
+                                bottom: currentIndex == index
+                                    ? 30
+                                    : 0, // Add 30px padding only to the middle page
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DetailsScreen(moviesModel: movie),
+                                      ));
+                                },
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Hero(
+                                    tag: 'Hero',
+                                    child: Transform.rotate(
+                                      angle: angle * pi / 90,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                          25,
+                                        ),
+                                        child: Image.network(
+                                          movie.poster,
+                                          width: 180,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
+                            );
+                          },
+                        ),
+                        Positioned(
+                          top: 230,
+                          left: 125,
+                          child: Row(
+                            children: List.generate(
+                              movies.length,
+                              (index) {
+                                return AnimatedContainer(
+                                  margin: const EdgeInsets.only(right: 10),
+                                  duration: const Duration(microseconds: 300),
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    color: currentIndex == index
+                                        ? buttonColor
+                                        : Colors.white24,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  width: currentIndex == index ? 30 : 10,
+                                );
+                              },
                             ),
                           ),
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
-                )
-              ],
-            ))
+                ],
+              ),
+            )
           ],
         ),
       ),
