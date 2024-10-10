@@ -1,9 +1,13 @@
 import 'package:cinema_ticket_booking_app/utils/const.dart';
 import 'package:cinema_ticket_booking_app/view/mainscreen/cinema_main_screen.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(DevicePreview(
+    builder: (context) => const MyApp(),
+    enabled: true,
+  ));
 }
 
 class MyApp extends StatelessWidget {

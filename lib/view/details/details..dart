@@ -1,5 +1,6 @@
 import 'package:cinema_ticket_booking_app/model/movies_model.dart';
 import 'package:cinema_ticket_booking_app/utils/const.dart';
+import 'package:cinema_ticket_booking_app/view/reservation/reservation.dart';
 import 'package:cinema_ticket_booking_app/widgets/movie_info.dart';
 import 'package:flutter/material.dart';
 
@@ -120,7 +121,13 @@ class DetailsScreen extends StatelessWidget {
           elevation: 0,
           onPressed: () {},
           label: MaterialButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ReservationScreen(),
+                  ));
+            },
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(40),
             ),
